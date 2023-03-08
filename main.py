@@ -10,24 +10,6 @@ import datetime
 from mongoengine import connect
 import json
 
-# class Event(BaseModel):
-#     # id : ObjectId()
-#     name : str 
-#     location : str
-#     type : str
-#     date : datetime.date 
-#     description : Union[str, None] = None 
-#     capacity : Union[int, None] = None
-
-
-# # An instance of class Event
-# newevent = Event()
-
-# # funtion to create and assign values to the instanse of class Event created
-# def create_event(eventname):
-#     # newevent.id = ObjectId()
-#     newevent.name = eventname
-#     return dict(newevent)
 
 app = FastAPI()
 con = connect(db='Event_Manager', host='localhost', port=27017)
@@ -38,9 +20,9 @@ collections=con['Event_Manager'].list_collection_names()
 def index():
     return {"message": "Welcome To Event_Manager_API my dear"}
 
-fake_items_db = [{"name": "Concerto Quim Barreiros", "location" : "Lisboa", "type" : "concert", "date" : "2023-05-17","description" : "Celebração dos 100 anos de carreira do icónico Quim Barreiros","capacity" : 10000 }, 
-                 {"name": "Circo Cardinali", "location" : "Viseu", "type" : "entertainment","date" : "2023-11-17","description" : "Um espetáculo único com participação especial de Batatoon"}, 
-                 {"name": "FC Porto - SL Benfica","location" : "Porto", "type" : "sport","date" : "2023-04-20", "description" : "Um clássico do futebol portugues a não perder", "capacity" : 55000}]
+fake_items_db = [{"event_id": "E100", "name": "Concerto Quim Barreiros", "location" : "Lisboa", "type" : "concert", "date" : "2023-05-17","description" : "Celebração dos 100 anos de carreira do icónico Quim Barreiros","capacity" : 10000 }, 
+                 {"event_id": "E101", "name": "Circo Cardinali", "location" : "Viseu", "type" : "entertainment","date" : "2023-11-17","description" : "Um espetáculo único com participação especial de Batatoon"}, 
+                 {"event_id": "E102", "name": "FC Porto - SL Benfica","location" : "Porto", "type" : "sport","date" : "2023-04-20", "description" : "Um clássico do futebol portugues a não perder", "capacity" : 55000}]
 
 #, response_model=List[Event]
 @app.get("/events")
@@ -95,6 +77,29 @@ async def deleteEvent(event_id : str):
     return {"message":"Event deleted","event_id": event_id}
     
 
+
+
+
+
+
+    # class Event(BaseModel):
+#     # id : ObjectId()
+#     name : str 
+#     location : str
+#     type : str
+#     date : datetime.date 
+#     description : Union[str, None] = None 
+#     capacity : Union[int, None] = None
+
+
+# # An instance of class Event
+# newevent = Event()
+
+# # funtion to create and assign values to the instanse of class Event created
+# def create_event(eventname):
+#     # newevent.id = ObjectId()
+#     newevent.name = eventname
+#     return dict(newevent)
 
 
     # for collection in collections:
