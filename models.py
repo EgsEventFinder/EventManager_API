@@ -1,18 +1,39 @@
 # from pydantic import BaseModel, Field as PydanticField
 # from bson import ObjectId
-import mongoengine
-from mongoengine import DynamicDocument, Document, StringField, DateTimeField, IntField
+import mongoengine as db
+from mongoengine import DynamicDocument, Document, StringField, DateField, IntField
 
 class events(DynamicDocument):
     # id : ObjectId()
-    event_id : StringField(required=True)
+    id = db.ObjectIdField(required=True, primary_key=True)
     name : StringField(max_length=100, required=True) 
-    location : StringField(max_length=100) 
-    type : StringField(max_length=100) 
-    date : StringField(max_length=100) 
-    description : StringField(max_length=100) = None
-    capacity : IntField(max_length=100) = None
+    location : StringField(max_length=100, required=False) 
+    type : StringField(max_length=100, required=False) 
+    date : DateField(required=False) 
+    description : StringField(max_length=100, required=False) 
+    capacity : IntField(required=False) 
 
+
+    # def to_dict(self):
+    #     """Converts the model instance to a dictionary."""
+    #     result = {'id': str(self.id)}
+    #     print(self._fields)
+    #     for field_name in self._fields:
+    #         result[field_name] = str(getattr(self, field_name))
+    #     return result
+    
+    def to_dict(self):
+        """Converts the model instance to a dictionary."""
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "location" : self.name,
+            "type" : self.type,
+            "date" : self.date,
+            "description" : self.description,
+            "capacity" : self.capacity,
+        }
+    
 # class PyObjectId(ObjectId):
 #     @classmethod
 #     def __get_validators__(cls):
