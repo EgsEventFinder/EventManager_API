@@ -23,6 +23,7 @@ class EventCreate(BaseModel):
     date : date 
     description : str
     capacity : int
+    tickets : list
 
 class EventUpdate(BaseModel):
     name: Optional[str] 
@@ -31,14 +32,44 @@ class EventUpdate(BaseModel):
     date : Optional[date] 
     description : Optional[str] 
     capacity : Optional[int] 
+    tickets : Optional[list]
 
 @app.get("/")
 def index():
     return {"message": "Welcome To Event_Manager_API my dear"}
 
-fake_events_db = [{"id": "6404ed8b3f4e1034e1a0949e", "name": "Concerto Quim Barreiros", "location" : "Lisboa", "type" : "concert", "date" : "2023-05-17","description" : "Celebração dos 100 anos de carreira do icónico Quim Barreiros","capacity" : 10000 }, 
-                 {"id": "6404ee613f4e1034e1a0949f", "name": "Circo Cardinali", "location" : "Viseu", "type" : "entertainment","date" : "2023-11-17","description" : "Um espetáculo único com participação especial de Batatoon"}, 
-                 {"id": "6404eecb3f4e1034e1a094a0", "name": "FC Porto - SL Benfica","location" : "Porto", "type" : "sport","date" : "2023-04-20", "description" : "Um clássico do futebol portugues a não perder", "capacity" : 55000}]
+fake_events_db = [{"id": "6404ed8b3f4e1034e1a0949e", "name": "Concerto Quim Barreiros", "location" : "Lisboa", "type" : "concert", "date" : "2023-05-17","description" : "Celebração dos 100 anos de carreira do icónico Quim Barreiros","capacity" : 10000, 
+                "tickets": [
+                {
+                "type": "normal",
+                "price": 10.00
+                },
+                {
+                "type": "vip",
+                "price": 30.00
+                }
+                ]}, 
+                {"id": "6404ee613f4e1034e1a0949f", "name": "Circo Cardinali", "location" : "Viseu", "type" : "entertainment","date" : "2023-11-17","description" : "Um espetáculo único com participação especial de Batatoon", 
+                "tickets": [
+                {
+                "type": "normal",
+                "price": 20.00
+                },
+                {
+                "type": "vip",
+                "price": 50.00
+                }
+                ]}, 
+                {"id": "6404eecb3f4e1034e1a094a0", "name": "FC Porto - SL Benfica","location" : "Porto", "type" : "sport","date" : "2023-04-20", "description" : "Um clássico do futebol portugues a não perder", "capacity" : 55000, 
+                "tickets": [
+                {
+                "type": "normal",
+                "price": 30.00
+                },
+                {
+                "type": "vip",
+                "price": 80.00
+                }]}]
 
 #, response_model=List[Event]
 @app.get("/events")
@@ -48,8 +79,8 @@ async def getEvents(name: str = Query(None, alias="event_name"),
                     limit: int = 10):
     
     ### Static version starts here 
-    # print(fake_events_db[1]['name'])
-    # return fake_events_db[skip : skip + limit]
+    print(fake_events_db[1]['name'])
+    return fake_events_db[skip : skip + limit]
     ### End of static version 
     
     query = {}
@@ -70,11 +101,11 @@ async def getEvents(name: str = Query(None, alias="event_name"),
 @app.get("/events/{event_id}")
 async def getEvent(event_id : str):
     ### Static version starts here 
-    # for e in fake_events_db:
-    #     if e['id'] == event_id:
-    #         return e
+    for e in fake_events_db:
+        if e['id'] == event_id:
+            return e
         
-    # raise HTTPException(status_code=404, detail="Event requested cannot be found in the system")
+    raise HTTPException(status_code=404, detail="Event requested cannot be found in the system")
     ### End of static version 
     
     try:
@@ -91,7 +122,7 @@ def addEvent(event : EventCreate):
     datetime_with_time = datetime.combine(datetime_str.date(), time.min)
     
     event = events.objects.create(id= str(ObjectId()), name=event.name, location=event.location, type=event.type, description=event.description, 
-                                  date=datetime_with_time, capacity=event.capacity)
+                                  date=datetime_with_time, capacity=event.capacity, tickets=event.tickets)
 
     return {"message":"Event Created", "Event": event.to_dict()}
 
@@ -115,6 +146,8 @@ async def updateEvent(event_id: str, event_update: EventUpdate):
             event.date = datetime_with_time
         if event_update.capacity is not None:
             event.capacity = event_update.capacity
+        if event_update.tickets is not None:
+            event.tickets = event_update.tickets    
         event.save()
         return {"message": f"Item with ID {event_id} updated successfully."}
     except events.DoesNotExist:
@@ -130,6 +163,3 @@ async def deleteEvent(event_id: str):
         return {"message": f"Event with ID {event_id} not found."}
 
 
-
-# TODO:
-# ALTERAR TODOS OS ENDPOINTS PARA EVENTS

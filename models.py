@@ -1,7 +1,7 @@
 # from pydantic import BaseModel, Field as PydanticField
 # from bson import ObjectId
 import mongoengine as db
-from mongoengine import DynamicDocument, Document, StringField, DateField, IntField
+from mongoengine import DynamicDocument, Document, StringField, DateField, IntField, ListField
 
 class events(DynamicDocument):
     # id : ObjectId()
@@ -12,6 +12,7 @@ class events(DynamicDocument):
     date : DateField(required=False) 
     description : StringField(max_length=100, required=False) 
     capacity : IntField(required=False) 
+    tickets : ListField(required=False)
 
 
     # def to_dict(self):
@@ -32,6 +33,7 @@ class events(DynamicDocument):
             "date" : self.date,
             "description" : self.description,
             "capacity" : self.capacity,
+            "tickets" : self.tickets
         }
     
 # class PyObjectId(ObjectId):
