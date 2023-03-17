@@ -14,7 +14,7 @@ from bson.objectid import ObjectId
 
 app = FastAPI()
 con = connect(db='Event_Manager', host='localhost', port=27017)
-collections=con['Event_Manager'].list_collection_names()
+# collections=con['Event_Manager'].list_collection_names()
 
 class EventCreate(BaseModel):
     name : str
@@ -36,7 +36,7 @@ class EventUpdate(BaseModel):
 def index():
     return {"message": "Welcome To Event_Manager_API my dear"}
 
-fake_items_db = [{"id": "6404ed8b3f4e1034e1a0949e", "name": "Concerto Quim Barreiros", "location" : "Lisboa", "type" : "concert", "date" : "2023-05-17","description" : "Celebração dos 100 anos de carreira do icónico Quim Barreiros","capacity" : 10000 }, 
+fake_events_db = [{"id": "6404ed8b3f4e1034e1a0949e", "name": "Concerto Quim Barreiros", "location" : "Lisboa", "type" : "concert", "date" : "2023-05-17","description" : "Celebração dos 100 anos de carreira do icónico Quim Barreiros","capacity" : 10000 }, 
                  {"id": "6404ee613f4e1034e1a0949f", "name": "Circo Cardinali", "location" : "Viseu", "type" : "entertainment","date" : "2023-11-17","description" : "Um espetáculo único com participação especial de Batatoon"}, 
                  {"id": "6404eecb3f4e1034e1a094a0", "name": "FC Porto - SL Benfica","location" : "Porto", "type" : "sport","date" : "2023-04-20", "description" : "Um clássico do futebol portugues a não perder", "capacity" : 55000}]
 
@@ -46,13 +46,12 @@ async def getEvents(name: str = Query(None, alias="event_name"),
                     type: str = Query(None, alias="event_type"),
                     skip: int = 0, 
                     limit: int = 10):
-    # print(fake_items_db[1]['name'])
-    # return fake_items_db[skip : skip + limit]
     
+    ### Static version starts here 
+    # print(fake_events_db[1]['name'])
+    # return fake_events_db[skip : skip + limit]
+    ### End of static version 
     
-    # Events = json.loads(events.objects().to_json()) 
-    # return {"events": Events}
-
     query = {}
     if name:
         query['name__icontains'] = name
@@ -66,32 +65,26 @@ async def getEvents(name: str = Query(None, alias="event_name"),
         Events = events.objects.skip(skip).limit(limit)
     
     return [e.to_dict() for e in Events]
-
-
     
-@app.get("/event/{event_id}")
+    
+@app.get("/events/{event_id}")
 async def getEvent(event_id : str):
+    ### Static version starts here 
+    # for e in fake_events_db:
+    #     if e['id'] == event_id:
+    #         return e
+        
+    # raise HTTPException(status_code=404, detail="Event requested cannot be found in the system")
+    ### End of static version 
+    
     try:
         Events = events.objects.get(id = ObjectId(event_id))
         return Events.to_dict()
     except events.DoesNotExist:
         raise HTTPException(status_code=404, detail="Event requested cannot be found in the system")
         
-    # event_dict = {
-    #     "event_id" : event.event_id,
-    #     "name"  : event.name,
-    #     "description" : event.description,
-    #     "location"  : event.location,
-    #     "type" : event.type,
-    #     "date" : event.date,
-    #     "capacity" : event.capacity
-    # }
 
-    # return event_dict
-
-
-
-@app.post("/event")
+@app.post("/events")
 def addEvent(event : EventCreate):
     date_str = event.date.strftime("%Y-%m-%d")
     datetime_str = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=None)
@@ -103,7 +96,7 @@ def addEvent(event : EventCreate):
     return {"message":"Event Created", "Event": event.to_dict()}
 
 
-@app.put("/event/{event_id}")
+@app.put("/events/{event_id}")
 async def updateEvent(event_id: str, event_update: EventUpdate):
     try:
         event = events.objects.get(id=event_id)
@@ -127,7 +120,7 @@ async def updateEvent(event_id: str, event_update: EventUpdate):
     except events.DoesNotExist:
         return {"message": f"Item with ID {event_id} not found."}
 
-@app.delete("/event/{event_id}")
+@app.delete("/events/{event_id}")
 async def deleteEvent(event_id: str):
     try:
         event = events.objects.get(id=event_id)
@@ -139,7 +132,4 @@ async def deleteEvent(event_id: str):
 
 
 # TODO:
-# event_id é o gerado pelo mongodb
-# post events para adicionar um evento (alterar o atual)
-# update endpoint (talvez com o endpoint events)
-# events endpoint with query parameters event name and  event type
+# ALTERAR TODOS OS ENDPOINTS PARA EVENTS
