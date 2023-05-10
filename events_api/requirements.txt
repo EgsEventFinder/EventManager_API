@@ -1,0 +1,7 @@
+# fastapi
+# uvicorn
+mongoengine
+# pymongo 
+# bson
+pydantic
+python-dotenv

@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  events_api:
+    container_name: events_api
+    build: 
+      context: ./
+      dockerfile: ./events_api/Dockerfile
+    restart: on-failure
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      MONGO_URI: "mongodb://db:27018/"
+    networks:
+      - my_network
+
+  db:
+    container_name: mongodb-container
+    image: mongo
+    build: 
+      context: ./
+      dockerfile: ./mongodb/Dockerfile.dev
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+
