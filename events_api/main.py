@@ -12,14 +12,25 @@ import json
 # from bson.objectid import ObjectId
 import os
 from pymongo import MongoClient
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = ['http://webappfinder.deti']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # MONGO_URI = os.getenv("MONGO_URI")
 
 # client = MongoClient(MONGO_URI)
 # db = client.mydatabase
-con = connect(db='mydatabase', host='db', port=27017)
+con = connect(db='mydatabase', host='mongodb', port=27017)
 
 
 # client = MongoClient("mongodb://mongodb-container:27018/")
@@ -143,22 +154,22 @@ def addEvent(event : EventCreate):
 async def updateEvent(event_id: str, event_update: EventUpdate):
     try:
         event = events.objects.get(id=event_id)
-        if event_update.name is not None:
+        if event_update.name is not None and event_update.name != "":
             event.name = event_update.name
-        if event_update.location is not None:
+        if event_update.location is not None and event_update.location != "":
             event.location = event_update.location
-        if event_update.type is not None:
+        if event_update.type is not None and event_update.type != "":
             event.type = event_update.type
-        if event_update.description is not None:
+        if event_update.description is not None and event_update.description != "":
             event.description = event_update.description
-        if event_update.date is not None:
+        if event_update.date is not None and event_update.date != "":
             date_str = event_update.date.strftime("%Y-%m-%d")
             datetime_str = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=None)
             datetime_with_time = datetime.combine(datetime_str.date(), time.min)
             event.date = datetime_with_time
-        if event_update.capacity is not None:
+        if event_update.capacity is not None and event_update.capacity != "":
             event.capacity = event_update.capacity
-        if event_update.tickets is not None:
+        if event_update.tickets is not None and isinstance(event_update.tickets , list) and len(event_update.tickets) > 0:
             event.tickets = event_update.tickets    
         event.save()
         return {"message": f"Item with ID {event_id} updated successfully."}

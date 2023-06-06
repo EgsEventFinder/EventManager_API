@@ -4,9 +4,9 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
 # COPY ./requirements.txt requirements.txt
 # COPY ./.env ./.env
-COPY ./events_api .
+COPY . .
 RUN pip install -r requirements.txt
 
-EXPOSE 5000
+EXPOSE 7000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--port", "5000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload", "--port", "7000"]
